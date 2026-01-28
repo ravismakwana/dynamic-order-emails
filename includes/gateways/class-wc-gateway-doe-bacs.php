@@ -3,6 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+#[AllowDynamicProperties]
 class WC_Gateway_DOE_BACS extends WC_Payment_Gateway {
     public $instructions;
     public $thank_you_page_text;

@@ -3,6 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+#[AllowDynamicProperties]
 class WC_Gateway_Venmo extends WC_Payment_Gateway {
     public $instructions;
     public $payment_instructions;
@@ -353,6 +354,13 @@ class WC_Gateway_Venmo extends WC_Payment_Gateway {
         $val = isset($_POST['woocommerce_' . $this->id . '_' . $field_key . '_value']) ? absint($_POST['woocommerce_' . $this->id . '_' . $field_key . '_value']) : 1;
         $this->update_option($field_key . '_value', $val);
         return;
+    }
+    public function log_debug($message) {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            $logger = wc_get_logger();
+            $context = array('source' => $this->id);
+            $logger->debug($message, $context);
+        }
     }
 }
 ?>

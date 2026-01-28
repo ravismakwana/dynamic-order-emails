@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dynamic Order Emails
  * Description: Sends dynamic emails after WooCommerce orders based on payment method, using WooCommerce email format. Includes custom payment gateways.
- * Version: 2.3.2
+ * Version: 2.3.3
  * Author: AP
  * Requires Plugins: woocommerce
  * Text Domain: dynamic-order-emails
