@@ -45,6 +45,9 @@ class Dynamic_Order_Emails {
         add_action('doe_venmo_pay_initial', [$this, 'send_venmo_pay_email'], 10, 1);
         add_action('doe_venmo_pay_reminder_24', [$this, 'send_venmo_pay_email'], 10, 1);
         add_action('doe_venmo_pay_reminder_48', [$this, 'send_venmo_pay_email'], 10, 1);
+        add_action('doe_echeck_pay_initial', [$this, 'send_echeck_email'], 10, 1);
+        add_action('doe_echeck_pay_reminder_24', [$this, 'send_echeck_email'], 10, 1);
+        add_action('doe_echeck_pay_reminder_48', [$this, 'send_echeck_email'], 10, 1);
 
         // Capture Message-ID for WooCommerce order confirmation email
         add_filter('wp_mail', [$this, 'capture_initial_email_message_id'], 10, 1);
@@ -471,6 +474,44 @@ class Dynamic_Order_Emails {
 				// Debug: Print all Venmo settings for this country
 				$this->log_debug("Order #$order_id - All Venmo Settings: " . print_r($settings, true));
                 break;
+            case 'echeck_pay':
+                // Initial reminder
+                $initial_key         = 'doe_echeck_pay_usa_initial_reminder_time';
+                $initial_key_prefixed = 'woocommerce_' . $payment_method . '_' . $initial_key;
+                $initial_enable      = $settings[$initial_key_prefixed . '_enable'] ?? $settings[$initial_key . '_enable'] ?? 'yes';
+                if ($initial_enable === 'yes') {
+                    $initial_type  = $settings[$initial_key_prefixed . '_type']  ?? $settings[$initial_key . '_type']  ?? 'minute';
+                    $initial_value = $settings[$initial_key_prefixed . '_value'] ?? $settings[$initial_key . '_value'] ?? 20;
+                    $multiplier    = ['second' => 1, 'minute' => 60, 'hour' => 3600][$initial_type] ?? 60;
+                    wp_schedule_single_event(time() + $initial_value * $multiplier, 'doe_echeck_pay_initial', [$order_id]);
+                    $this->log_debug("Order #$order_id - Scheduled eCheck initial email in $initial_value $initial_type(s)");
+                }
+
+                // 24h reminder
+                $reminder24_key         = 'doe_echeck_pay_usa_reminder_24_time';
+                $reminder24_key_prefixed = 'woocommerce_' . $payment_method . '_' . $reminder24_key;
+                $reminder24_enable      = $settings[$reminder24_key_prefixed . '_enable'] ?? $settings[$reminder24_key . '_enable'] ?? 'yes';
+                if ($reminder24_enable === 'yes') {
+                    $reminder24_type  = $settings[$reminder24_key_prefixed . '_type']  ?? $settings[$reminder24_key . '_type']  ?? 'hour';
+                    $reminder24_value = $settings[$reminder24_key_prefixed . '_value'] ?? $settings[$reminder24_key . '_value'] ?? 24;
+                    $multiplier       = ['second' => 1, 'minute' => 60, 'hour' => 3600][$reminder24_type] ?? 3600;
+                    wp_schedule_single_event(time() + $reminder24_value * $multiplier, 'doe_echeck_pay_reminder_24', [$order_id]);
+                    $this->log_debug("Order #$order_id - Scheduled eCheck 24hr reminder in $reminder24_value $reminder24_type(s)");
+                }
+
+                // 48h reminder
+                $reminder48_key         = 'doe_echeck_pay_usa_reminder_48_time';
+                $reminder48_key_prefixed = 'woocommerce_' . $payment_method . '_' . $reminder48_key;
+                $reminder48_enable      = $settings[$reminder48_key_prefixed . '_enable'] ?? $settings[$reminder48_key . '_enable'] ?? 'yes';
+                if ($reminder48_enable === 'yes') {
+                    $reminder48_type  = $settings[$reminder48_key_prefixed . '_type']  ?? $settings[$reminder48_key . '_type']  ?? 'hour';
+                    $reminder48_value = $settings[$reminder48_key_prefixed . '_value'] ?? $settings[$reminder48_key . '_value'] ?? 48;
+                    $multiplier       = ['second' => 1, 'minute' => 60, 'hour' => 3600][$reminder48_type] ?? 3600;
+                    wp_schedule_single_event(time() + $reminder48_value * $multiplier, 'doe_echeck_pay_reminder_48', [$order_id]);
+                    $this->log_debug("Order #$order_id - Scheduled eCheck 48hr reminder in $reminder48_value $reminder48_type(s)");
+                }
+                break;
+
             default:
                 $this->log_debug("No email scheduling for payment method $payment_method for order #$order_id");
                 break;
@@ -528,6 +569,13 @@ class Dynamic_Order_Emails {
                     'doe_venmo_pay_initial',
                     'doe_venmo_pay_reminder_24',
                     'doe_venmo_pay_reminder_48',
+                ];
+                break;
+            case 'echeck_pay':
+                $actions = [
+                    'doe_echeck_pay_initial',
+                    'doe_echeck_pay_reminder_24',
+                    'doe_echeck_pay_reminder_48',
                 ];
                 break;
         }
@@ -997,6 +1045,127 @@ class Dynamic_Order_Emails {
         );
 
         $this->log_debug("Venmo Pay email ($current_action) for order #$order_id sent: " . ($result ? 'Success' : 'Failed'));
+    }
+
+    public function send_echeck_email($order_id) {
+        $order = wc_get_order($order_id);
+        if (!$order || $order->get_status() !== 'on-hold') {
+            $this->log_debug("eCheck email not sent for order #$order_id: Invalid order or status is not on-hold");
+            return;
+        }
+
+        $current_action = current_action();
+        $this->log_debug("Sending eCheck email for order #$order_id, action: $current_action");
+
+        $settings = get_option('woocommerce_echeck_pay_settings', []);
+
+        // Determine subject key from the current scheduled action
+        if ($current_action === 'doe_echeck_pay_initial') {
+            $subject_key = 'doe_echeck_pay_usa_initial_subject';
+        } elseif ($current_action === 'doe_echeck_pay_reminder_24') {
+            $subject_key = 'doe_echeck_pay_usa_reminder_24_subject';
+        } elseif ($current_action === 'doe_echeck_pay_reminder_48') {
+            $subject_key = 'doe_echeck_pay_usa_reminder_48_subject';
+        } else {
+            $subject_key = 'doe_echeck_pay_usa_initial_subject';
+        }
+
+        $subject = $settings[$subject_key] ?? 'PAYMENT RECEIVED : [{company_name}]: New order #{order_id}';
+        $subject = $this->replace_placeholders($subject, $order);
+
+        $content = $settings['doe_echeck_pay_usa'] ?? 'Hello {customer_name},<br><br>Thank you for placing your order with us!<br><br>Your eCheck payment for order #{order_id} has been received and is currently being verified. We will notify you once the payment has been confirmed and your order is being processed.<br><br>Please do not refresh the page or enter the e-checking information again. We will notify you about the transaction status within one working day.<br><br><strong>Delivery can take up to twenty to thirty working days.</strong><br><br>Warm Regards,<br>Team {company_name}';
+
+        // Prepend email_header_text if configured
+        $header_text = $settings['email_header_text'] ?? '';
+        if ($header_text) {
+            // Replace {echeck_details} placeholder with formatted eCheck details
+            $echeck_details = $this->build_echeck_details_html($order);
+            $header_text    = str_replace('{echeck_details}', $echeck_details, $header_text);
+            $header_text    = $this->replace_placeholders($header_text, $order);
+        }
+
+        $email_content = '<html><head><meta charset="UTF-8"></head><body>'
+            . ($header_text ? wpautop($header_text) : '')
+            . wpautop($this->replace_placeholders($content, $order))
+            . $this->get_wc_email_content($subject, $content, $order)
+            . '</body></html>';
+
+        $headers = $this->get_email_headers($order);
+
+        $mailer = WC()->mailer();
+        $result = $mailer->send(
+            $order->get_billing_email(),
+            $subject,
+            $email_content,
+            $headers
+        );
+
+        $this->log_debug("eCheck email ($current_action) for order #$order_id sent: " . ($result ? 'Success' : 'Failed'));
+    }
+
+    /**
+     * Build a formatted HTML block of the order's eCheck details.
+     * Used by send_echeck_email() for the {echeck_details} placeholder.
+     *
+     * @param WC_Order $order
+     * @return string
+     */
+    private function build_echeck_details_html($order) {
+        if (!$order) {
+            return '';
+        }
+
+        $order_id     = $order->get_id();
+        $first_name   = get_post_meta($order_id, '_echeck_first_name',    true);
+        $last_name    = get_post_meta($order_id, '_echeck_last_name',     true);
+        $payment_type = get_post_meta($order_id, '_echeck_payment_type',  true);
+        $routing_raw  = get_post_meta($order_id, '_echeck_routing_number', true);
+        $account_raw  = get_post_meta($order_id, '_echeck_account_number', true);
+
+        if (!$first_name && !$last_name && !$routing_raw && !$account_raw) {
+            return '';
+        }
+
+        // Decrypt routing / account numbers via the eCheck gateway instance
+        $gateways  = WC()->payment_gateways()->get_available_payment_gateways();
+        $echeck_gw = $gateways['echeck_pay'] ?? null;
+
+        // Fall back to loading the gateway class directly if not in available gateways
+        if (!$echeck_gw) {
+            $all_gateways = WC()->payment_gateways()->payment_gateways();
+            $echeck_gw    = $all_gateways['echeck_pay'] ?? null;
+        }
+
+        if ($echeck_gw && method_exists($echeck_gw, 'decrypt')) {
+            $routing_number = $routing_raw ? $echeck_gw->decrypt($routing_raw) : '—';
+            $account_number = $account_raw ? $echeck_gw->decrypt($account_raw) : '—';
+        } else {
+            // If gateway unavailable, show raw (encrypted) value so no data is lost
+            $routing_number = $routing_raw ?: '—';
+            $account_number = $account_raw ?: '—';
+        }
+
+        $type_labels = [
+            'personal_checking' => 'Personal Checking',
+            'business_checking' => 'Business Checking',
+        ];
+        $payment_type_label = $type_labels[$payment_type] ?? $payment_type;
+        $full_name          = trim($first_name . ' ' . $last_name) ?: '—';
+
+        $html  = '<div style="margin:16px 0;padding:14px 18px;background:#f7f7f7;border:1px solid #ddd;border-radius:6px;font-size:14px;line-height:1.6;">';
+        $html .= '<strong style="display:block;margin-bottom:8px;font-size:15px;">eCheck Details</strong>';
+        $html .= '<table style="border-collapse:collapse;width:100%;">';
+        $html .= '<tr><td style="padding:3px 10px 3px 0;color:#555;width:45%;">Account Holder</td>';
+        $html .= '<td style="padding:3px 0;color:#111;">' . esc_html($full_name) . '</td></tr>';
+        $html .= '<tr><td style="padding:3px 10px 3px 0;color:#555;">Payment Type</td>';
+        $html .= '<td style="padding:3px 0;color:#111;">' . esc_html($payment_type_label ?: '—') . '</td></tr>';
+        $html .= '<tr><td style="padding:3px 10px 3px 0;color:#555;">Routing Number</td>';
+        $html .= '<td style="padding:3px 0;color:#111;font-family:monospace;">' . esc_html($routing_number) . '</td></tr>';
+        $html .= '<tr><td style="padding:3px 10px 3px 0;color:#555;">Account Number</td>';
+        $html .= '<td style="padding:3px 0;color:#111;font-family:monospace;">' . esc_html($account_number) . '</td></tr>';
+        $html .= '</table></div>';
+
+        return $html;
     }
 
     public function show_zelle_and_cashapp_to_usa($available_gateways) {
