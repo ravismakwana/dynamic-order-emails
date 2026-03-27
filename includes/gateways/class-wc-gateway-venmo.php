@@ -144,6 +144,19 @@ class WC_Gateway_Venmo extends WC_Payment_Gateway {
                 'label' => __('Accept Venmo Pay if the order is virtual', 'dynamic-order-emails'),
                 'type' => 'checkbox',
                 'default' => 'yes'
+            ),
+            'allowed_countries' => array(
+                'title' => __('Allowed Countries', 'dynamic-order-emails'),
+                'type' => 'multiselect',
+                'class' => 'wc-enhanced-select',
+                'css' => 'width: 400px;',
+                'default' => '',
+                'description' => __('Select countries where this gateway should be available. Leave blank to allow all countries.', 'dynamic-order-emails'),
+                'options' => WC()->countries->get_countries(),
+                'desc_tip' => true,
+                'custom_attributes' => array(
+                    'data-placeholder' => __('Select allowed countries', 'dynamic-order-emails')
+                )
             )
         );
     }

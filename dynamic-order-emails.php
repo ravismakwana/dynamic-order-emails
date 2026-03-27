@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Dynamic Order Emails
  * Description: Sends dynamic emails after WooCommerce orders based on payment method, using WooCommerce email format. Includes custom payment gateways.
- * Version: 2.3.4
+ * Version: 2.3.5
  * Author: AP
  * Requires Plugins: woocommerce
  * Text Domain: dynamic-order-emails
@@ -150,6 +150,21 @@ function doe_migrate_settings() {
         $venmo_settings['doe_venmo_pay_au'] = $venmo_settings['doe_venmo_pay_au'] ?? 'Dear {customer_name},<br><br>Kindly use the "friends and family" option to avoid a 28% tax. When making the payment, please only mention your name or "Gift" in the comment section and avoid any mention of medicine or our website name. Also let us know once the payment is done we will process your order accordingly<br><br>Your total payable amount is {order_total}<br><br>Venmo to <strong>@Mark-Overson-1</strong>.<br>Let us know once the payment is complete, and we will proceed with your order accordingly. If you need the last 4 digits to verify the payments it\'s "3863"<br><br>Thank you,<br>Team {company_name}<br>Phone: +1 877-925-1112 (Call and Chat)<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)';
         update_option('woocommerce_venmo_pay_settings', $venmo_settings);
         delete_option('doe_disable_emails_venmo_pay');
+    }
+    // Migrate echeck
+    if ( get_option( 'doe_disable_emails_echeck' ) !== false ) {
+        $echeck_settings = get_option('woocommerce_echeck_settings', []);
+        $echeck_settings['doe_disable_emails'] = get_option('doe_disable_emails_echeck', false);
+        $echeck_settings['doe_echeck_usa_initial_subject'] = $echeck_settings['doe_echeck_usa_initial_subject'] ?? 'PAYMENT LINK : [{company_name}]: New order #{order_id}';
+        $echeck_settings['doe_echeck_usa_reminder_24_subject'] = $echeck_settings['doe_echeck_usa_reminder_24_subject'] ?? 'REMINDER : [{company_name}]: New order #{order_id}';
+        $echeck_settings['doe_echeck_usa_reminder_48_subject'] = $echeck_settings['doe_echeck_usa_reminder_48_subject'] ?? 'KINDLY REMINDER : [{company_name}]: New order #{order_id}';
+        $echeck_settings['doe_echeck_usa'] = $echeck_settings['doe_echeck_usa'] ?? 'Dear {customer_name},<br><br>Kindly use the "friends and family" option to avoid a 28% tax. When making the payment, please only mention your name or "Gift" in the comment section and avoid any mention of medicine or our website name. Also let us know once the payment is done we will process your order accordingly<br><br>Your total payable amount is {order_total}<br><br>Venmo to <strong>@Mark-Overson-1</strong>.<br>Let us know once the payment is complete, and we will proceed with your order accordingly. If you need the last 4 digits to verify the payments it\'s "3863"<br><br>Thank you,<br>Team {company_name}<br>Phone: +1 877-925-1112 (Call and Chat)<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)';
+        $echeck_settings['doe_echeck_au_initial_subject'] = $echeck_settings['doe_echeck_au_initial_subject'] ?? 'PAYMENT LINK : [{company_name}]: New order #{order_id}';
+        $echeck_settings['doe_echeck_au_reminder_24_subject'] = $echeck_settings['doe_echeck_au_reminder_24_subject'] ?? 'REMINDER : [{company_name}]: New order #{order_id}';
+        $echeck_settings['doe_echeck_au_reminder_48_subject'] = $echeck_settings['doe_echeck_au_reminder_48_subject'] ?? 'KINDLY REMINDER : [{company_name}]: New order #{order_id}';
+        $echeck_settings['doe_echeck_au'] = $echeck_settings['doe_echeck_au'] ?? 'Dear {customer_name},<br><br>Kindly use the "friends and family" option to avoid a 28% tax. When making the payment, please only mention your name or "Gift" in the comment section and avoid any mention of medicine or our website name. Also let us know once the payment is done we will process your order accordingly<br><br>Your total payable amount is {order_total}<br><br>Venmo to <strong>@Mark-Overson-1</strong>.<br>Let us know once the payment is complete, and we will proceed with your order accordingly. If you need the last 4 digits to verify the payments it\'s "3863"<br><br>Thank you,<br>Team {company_name}<br>Phone: +1 877-925-1112 (Call and Chat)<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)';
+        update_option('woocommerce_echeck_settings', $echeck_settings);
+        delete_option('doe_disable_emails_echeck');
     }
 }
 

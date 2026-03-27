@@ -64,7 +64,7 @@ class Dynamic_Order_Emails {
         add_filter('woocommerce_email_heading_customer_refunded_order', [$this, 'doe_email_heading_refunded'], 10, 2);
         add_filter('woocommerce_email_heading_customer_invoice', [$this, 'doe_email_heading_invoice'], 10, 2);
 
-        add_filter('woocommerce_available_payment_gateways', [$this, 'show_zelle_and_cashapp_to_usa'], 10, 2);
+        add_filter('woocommerce_available_payment_gateways', [$this, 'filter_gateways_by_allowed_countries'], 10, 1);
     }
 
     /**
@@ -594,6 +594,8 @@ class Dynamic_Order_Emails {
 			'SG' => 'SGD', // Singapore - Singapore Dollar
 			'MY' => 'MYR', // Malaysia - Malaysian Ringgit
 			'TW' => 'TWD', // Taiwan - New Taiwan Dollar
+            'CA' => 'CAD', // Canada - Canadian Dollar
+            'HK' => 'HKD', // Hong Kong - Hong Kong Dollar
 		];
 		$currency = isset($currency_map[$billing_country]) ? $currency_map[$billing_country] : 'USD';
         $order_total = wc_price($order->get_total(), ['currency' => $currency]);
@@ -710,6 +712,8 @@ class Dynamic_Order_Emails {
             'SG' => 'sg',
             'MY' => 'my',
             'TW' => 'tw',
+            'CA' => 'ca',
+            'HK' => 'hk',
         ];
         $country_key = $country_map[$billing_country] ?? 'us';
     
@@ -1168,21 +1172,30 @@ class Dynamic_Order_Emails {
         return $html;
     }
 
-    public function show_zelle_and_cashapp_to_usa($available_gateways) {
+    public function filter_gateways_by_allowed_countries($available_gateways) {
         if (is_admin() || !function_exists('WC') || !WC()->customer) {
             return $available_gateways;
         }
 
         $customer_country = WC()->customer->get_billing_country() ?: WC()->customer->get_shipping_country();
 
-        if ('US' !== $customer_country) {
-            unset($available_gateways['zelle_pay']);
-            unset($available_gateways['cash_app']);
-            unset($available_gateways['venmo_pay']);
+        if (empty($customer_country)) {
+            return $available_gateways;
         }
-        if ('GB' === $customer_country || 'AU' === $customer_country) {
-            unset($available_gateways['doe_cod']);
-            unset($available_gateways['cod']);
+
+        foreach ($available_gateways as $gateway_id => $gateway) {
+            if (isset($gateway->settings['allowed_countries'])) {
+                $allowed_countries = $gateway->settings['allowed_countries'];
+                
+                // Ensure it's an array
+                if (!is_array($allowed_countries)) {
+                    $allowed_countries = array_filter(array_map('trim', explode(',', $allowed_countries)));
+                }
+
+                if (!empty($allowed_countries) && !in_array($customer_country, $allowed_countries, true)) {
+                    unset($available_gateways[$gateway_id]);
+                }
+            }
         }
 
         return $available_gateways;
