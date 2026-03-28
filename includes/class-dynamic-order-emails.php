@@ -1184,15 +1184,29 @@ class Dynamic_Order_Emails {
         }
 
         foreach ($available_gateways as $gateway_id => $gateway) {
+            // Check Allowed Countries
             if (isset($gateway->settings['allowed_countries'])) {
                 $allowed_countries = $gateway->settings['allowed_countries'];
                 
-                // Ensure it's an array
                 if (!is_array($allowed_countries)) {
                     $allowed_countries = array_filter(array_map('trim', explode(',', $allowed_countries)));
                 }
 
                 if (!empty($allowed_countries) && !in_array($customer_country, $allowed_countries, true)) {
+                    unset($available_gateways[$gateway_id]);
+                    continue; // Already removed, skip checking excluded countries
+                }
+            }
+
+            // Check Excluded Countries
+            if (isset($gateway->settings['excluded_countries'])) {
+                $excluded_countries = $gateway->settings['excluded_countries'];
+                
+                if (!is_array($excluded_countries)) {
+                    $excluded_countries = array_filter(array_map('trim', explode(',', $excluded_countries)));
+                }
+
+                if (!empty($excluded_countries) && in_array($customer_country, $excluded_countries, true)) {
                     unset($available_gateways[$gateway_id]);
                 }
             }

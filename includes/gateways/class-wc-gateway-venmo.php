@@ -157,6 +157,19 @@ class WC_Gateway_Venmo extends WC_Payment_Gateway {
                 'custom_attributes' => array(
                     'data-placeholder' => __('Select allowed countries', 'dynamic-order-emails')
                 )
+            ),
+            'excluded_countries' => array(
+                'title' => __('Excluded Countries', 'dynamic-order-emails'),
+                'type' => 'multiselect',
+                'class' => 'wc-enhanced-select',
+                'css' => 'width: 400px;',
+                'default' => '',
+                'description' => __('Select countries where this gateway should NOT be available. Leave blank to not exclude any countries.', 'dynamic-order-emails'),
+                'options' => WC()->countries->get_countries(),
+                'desc_tip' => true,
+                'custom_attributes' => array(
+                    'data-placeholder' => __('Select excluded countries', 'dynamic-order-emails')
+                )
             )
         );
     }

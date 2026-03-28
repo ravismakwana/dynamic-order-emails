@@ -287,6 +287,19 @@ class WC_Gateway_DOE_BACS extends WC_Payment_Gateway {
                     'data-placeholder' => __('Select allowed countries', 'dynamic-order-emails')
                 ]
             ],
+            'excluded_countries' => [
+                'title' => __('Excluded Countries', 'dynamic-order-emails'),
+                'type' => 'multiselect',
+                'class' => 'wc-enhanced-select',
+                'css' => 'width: 400px;',
+                'default' => '',
+                'description' => __('Select countries where this gateway should NOT be available. Leave blank to not exclude any countries.', 'dynamic-order-emails'),
+                'options' => WC()->countries->get_countries(),
+                'desc_tip' => true,
+                'custom_attributes' => [
+                    'data-placeholder' => __('Select excluded countries', 'dynamic-order-emails')
+                ]
+            ],
         ];
     }
 
@@ -400,6 +413,7 @@ class WC_Gateway_DOE_BACS extends WC_Payment_Gateway {
 				'doe_dbt_reminder_48_subject',
 				'doe_dbt_reminder_48_time',
                 'allowed_countries',
+                'excluded_countries',
             ]) ) ); ?>
         </table>
 
