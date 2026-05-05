@@ -274,6 +274,46 @@ class WC_Gateway_DOE_BACS extends WC_Payment_Gateway {
 				'description' => __('Full email body with HTML support. Placeholders: {customer_name}, {order_id}, {company_name}, {currency}, {order_total}, {from_email}', 'dynamic-order-emails'),
                 'default' => __('Hello {customer_name},<br><br>Thank you for placing a valuable order with us!!!<br><br>Your total payable amount is {order_total}<br><br>Use the below details to transfer the net amount, and simply mention your order number in the comment section. <strong>DO NOT</strong> reference anything related to medicine or website names. Just mention your order number:<br><br><strong>Account Holder Name:</strong> GAJANAND ENTERPRISE<br><strong>Account Number:</strong> 8339589472<br><strong>ACH Routing Number:</strong> 026073150<br><strong>Account Type:</strong> Checking<br><strong>Bank Name and Address:</strong> Community Federal Savings Bank, 5 Penn Plaza, 14th Floor, New York, NY 10001, US<br><br>After completion of transfer, please share a screenshot or receipt.<br><br><strong>Note:</strong> Your items will ship from India only. Delivery will take approximately 15-20 days (up to 30 days from dispatch due to postal disruptions, weather issues, or natural disasters).<br><br><strong>CHARGEBACK-DISPUTE POLICY:</strong><br><br>We kindly ask you not to make chargebacks without contacting us. If you are not satisfied with our service/Product you have purchased, please contact us at <a href="mailto:{from_email}">{from_email}</a> and we will try to do everything possible to resolve the problem in your favor.<br><br>We appreciate your patience and also your patronage of our pharmacy<br><br>Warm Regards,<br>Team {company_name}<br>Phone: +1 877-925-1112 (Call and Chat)<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)', 'dynamic-order-emails'),
             ],
+            'thank_you_page_text_nz' => array(
+                'title' => __('Direct Bank Transfer – Order Received Page Text (New Zealand)', 'dynamic-order-emails'),
+                'type' => 'wpeditor',
+                'description' => __('Use placeholders: {from_email}, {order_number}, {order_total}, {currency}, {customer_name}', 'dynamic-order-emails'),
+                'default' => __('<div style="max-width: 500px; margin: 0 auto 20px; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 20px; text-align: center;"><h2 style="color: #28a745; margin-bottom: 15px;"><span style="color: #333333; font-size: 15px;"><b>We will send your payment link via email shortly. Please check your spam or junk folder if you do not receive it.</b></span></h2><p style="font-size: 15px; color: #333; margin-bottom: 12px;">If you have any questions in the meantime, feel free to reach out at
+<a href="mailto:{from_email}">{from_email}</a>. We\'re happy to assist!</p></div>', 'dynamic-order-emails'),
+                'desc_tip' => false,
+            ),
+			'email_header_text_nz' => [
+                'title'       => __('Direct Bank Transfer – Email Header (New Zealand)', 'dynamic-order-emails'),
+                'type'        => 'wpeditor',
+                'description' => 'Use placeholders: {from_email}, {order_number}, {order_total}, {currency}, {customer_name}',
+                'default'     => '<p>Thank you for shopping with us! Your order has been successfully placed.</p><strong>We will send you the PAYMENT LINK within 12 hours to your email. After your payment confirmation, Your order will be shipped within 24 hours and provide you the tracking number.</strong>',
+            ],
+            'direct_bank_transfer_email_body_nz' => [
+                'title'   => __('Direct Bank Transfer – Payment Email (New Zealand)', 'dynamic-order-emails'),
+                'type'    => 'wpeditor',
+				'description' => __('Full email body with HTML support. Placeholders: {customer_name}, {order_id}, {company_name}, {currency}, {order_total}, {from_email}', 'dynamic-order-emails'),
+                'default' => __('Hello {customer_name},<br><br>Thank you for placing a valuable order with us!!!<br><br>Your total payable amount is {order_total}<br><br>Use the below details to transfer the net amount, and simply mention your order number in the comment section. <strong>DO NOT</strong> reference anything related to medicine or website names. Just mention your order number:<br><br><strong>Account Holder Name:</strong> GAJANAND ENTERPRISE<br><strong>Account Number:</strong> 8339589472<br><strong>ACH Routing Number:</strong> 026073150<br><strong>Account Type:</strong> Checking<br><strong>Bank Name and Address:</strong> Community Federal Savings Bank, 5 Penn Plaza, 14th Floor, New York, NY 10001, US<br><br>After completion of transfer, please share a screenshot or receipt.<br><br><strong>Note:</strong> Your items will ship from India only. Delivery will take approximately 15-20 days (up to 30 days from dispatch due to postal disruptions, weather issues, or natural disasters).<br><br><strong>CHARGEBACK-DISPUTE POLICY:</strong><br><br>We kindly ask you not to make chargebacks without contacting us. If you are not satisfied with our service/Product you have purchased, please contact us at <a href="mailto:{from_email}">{from_email}</a> and we will try to do everything possible to resolve the problem in your favor.<br><br>We appreciate your patience and also your patronage of our pharmacy<br><br>Warm Regards,<br>Team {company_name}<br>Phone: +1 877-925-1112 (Call and Chat)<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)', 'dynamic-order-emails'),
+            ],
+            'thank_you_page_text_jp' => array(
+                'title' => __('Direct Bank Transfer – Order Received Page Text (Japan)', 'dynamic-order-emails'),
+                'type' => 'wpeditor',
+                'description' => __('Use placeholders: {from_email}, {order_number}, {order_total}, {currency}, {customer_name}', 'dynamic-order-emails'),
+                'default' => __('<div style="max-width: 500px; margin: 0 auto 20px; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 20px; text-align: center;"><h2 style="color: #28a745; margin-bottom: 15px;"><span style="color: #333333; font-size: 15px;"><b>We will send your payment link via email shortly. Please check your spam or junk folder if you do not receive it.</b></span></h2><p style="font-size: 15px; color: #333; margin-bottom: 12px;">If you have any questions in the meantime, feel free to reach out at
+<a href="mailto:{from_email}">{from_email}</a>. We\'re happy to assist!</p></div>', 'dynamic-order-emails'),
+                'desc_tip' => false,
+            ),
+			'email_header_text_jp' => [
+                'title'       => __('Direct Bank Transfer – Email Header (Japan)', 'dynamic-order-emails'),
+                'type'        => 'wpeditor',
+                'description' => 'Use placeholders: {from_email}, {order_number}, {order_total}, {currency}, {customer_name}',
+                'default'     => '<p>Thank you for shopping with us! Your order has been successfully placed.</p><strong>We will send you the PAYMENT LINK within 12 hours to your email. After your payment confirmation, Your order will be shipped within 24 hours and provide you the tracking number.</strong>',
+            ],
+            'direct_bank_transfer_email_body_jp' => [
+                'title'   => __('Direct Bank Transfer – Payment Email (Japan)', 'dynamic-order-emails'),
+                'type'    => 'wpeditor',
+				'description' => __('Full email body with HTML support. Placeholders: {customer_name}, {order_id}, {company_name}, {currency}, {order_total}, {from_email}', 'dynamic-order-emails'),
+                'default' => __('Hello {customer_name},<br><br>Thank you for placing a valuable order with us!!!<br><br>Your total payable amount is {order_total}<br><br>Use the below details to transfer the net amount, and simply mention your order number in the comment section. <strong>DO NOT</strong> reference anything related to medicine or website names. Just mention your order number:<br><br><strong>Account Holder Name:</strong> GAJANAND ENTERPRISE<br><strong>Account Number:</strong> 8339589472<br><strong>ACH Routing Number:</strong> 026073150<br><strong>Account Type:</strong> Checking<br><strong>Bank Name and Address:</strong> Community Federal Savings Bank, 5 Penn Plaza, 14th Floor, New York, NY 10001, US<br><br>After completion of transfer, please share a screenshot or receipt.<br><br><strong>Note:</strong> Your items will ship from India only. Delivery will take approximately 15-20 days (up to 30 days from dispatch due to postal disruptions, weather issues, or natural disasters).<br><br><strong>CHARGEBACK-DISPUTE POLICY:</strong><br><br>We kindly ask you not to make chargebacks without contacting us. If you are not satisfied with our service/Product you have purchased, please contact us at <a href="mailto:{from_email}">{from_email}</a> and we will try to do everything possible to resolve the problem in your favor.<br><br>We appreciate your patience and also your patronage of our pharmacy<br><br>Warm Regards,<br>Team {company_name}<br>Phone: +1 877-925-1112 (Call and Chat)<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)', 'dynamic-order-emails'),
+            ],
             'allowed_countries' => [
                 'title' => __('Allowed Countries', 'dynamic-order-emails'),
                 'type' => 'multiselect',
@@ -428,6 +468,8 @@ class WC_Gateway_DOE_BACS extends WC_Payment_Gateway {
                 <a href="#tab-tw" class="nav-tab">Taiwan</a>
                 <a href="#tab-ca" class="nav-tab">Canada</a>
                 <a href="#tab-hk" class="nav-tab">Hong Kong</a>
+                <a href="#tab-nz" class="nav-tab">New Zealand</a>
+                <a href="#tab-jp" class="nav-tab">Japan</a>
             </nav>
 			<div id="tab-us" class="doe-tab-content postbox" style="display: block;">
                 <div class="form-table">
@@ -520,7 +562,28 @@ class WC_Gateway_DOE_BACS extends WC_Payment_Gateway {
                     <?php echo $this->generate_wpeditor_html('direct_bank_transfer_email_body_hk', $this->form_fields['direct_bank_transfer_email_body_hk']); ?>
                 </div>
             </div>
-
+            <div id="tab-nz" class="doe-tab-content postbox" style="display: none;">
+				<div class="form-table">
+                    <?php echo $this->generate_wpeditor_html('thank_you_page_text_nz', $this->form_fields['thank_you_page_text_nz']); ?>
+				</div>
+				<div class="form-table">
+					<?php echo $this->generate_wpeditor_html('email_header_text_nz', $this->form_fields['email_header_text_nz']); ?>
+				</div>
+                <div class="form-table">
+                    <?php echo $this->generate_wpeditor_html('direct_bank_transfer_email_body_nz', $this->form_fields['direct_bank_transfer_email_body_nz']); ?>
+                </div>
+            </div>
+			<div id="tab-jp" class="doe-tab-content postbox" style="display: none;">
+				<div class="form-table">
+                    <?php echo $this->generate_wpeditor_html('thank_you_page_text_jp', $this->form_fields['thank_you_page_text_jp']); ?>
+				</div>
+				<div class="form-table">
+					<?php echo $this->generate_wpeditor_html('email_header_text_jp', $this->form_fields['email_header_text_jp']); ?>
+				</div>
+                <div class="form-table">
+                    <?php echo $this->generate_wpeditor_html('direct_bank_transfer_email_body_jp', $this->form_fields['direct_bank_transfer_email_body_jp']); ?>
+                </div>
+            </div>
         </div>
 
         <script type="text/javascript">
@@ -593,6 +656,8 @@ class WC_Gateway_DOE_BACS extends WC_Payment_Gateway {
 			'TW' => 'tw',
             'CA' => 'ca',
             'HK' => 'hk',
+            'NZ' => 'nz',
+            'JP' => 'jp',
 		];
 		$country_key = $country_map[$billing_country] ?? 'us';
 
@@ -652,6 +717,8 @@ class WC_Gateway_DOE_BACS extends WC_Payment_Gateway {
 			'TW' => 'tw',
             'CA' => 'ca',
             'HK' => 'hk',
+            'NZ' => 'nz',
+            'JP' => 'jp',
 		];
 		$country_key = $country_map[$billing_country] ?? 'us';
 

@@ -586,6 +586,15 @@ class Dynamic_Order_Emails {
         }
     }
 
+    private function append_global_footer($content) {
+        $default_footer = 'Warm Regards, <br>Team {company_name} <br>Phone: +1 877-925-1112 (Call and Chat) <br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)';
+        $global_footer = get_option('doe_global_email_footer', $default_footer);
+        if (!empty(trim($global_footer))) {
+            $content .= '<br><br>' . $global_footer;
+        }
+        return $content;
+    }
+
     private function replace_placeholders($content, $order) {
 		$billing_country = $order->get_billing_country();
 		$currency_map = [
@@ -596,6 +605,8 @@ class Dynamic_Order_Emails {
 			'TW' => 'TWD', // Taiwan - New Taiwan Dollar
             'CA' => 'CAD', // Canada - Canadian Dollar
             'HK' => 'HKD', // Hong Kong - Hong Kong Dollar
+            'NZ' => 'NZD', // New Zealand - New Zealand Dollar
+            'JP' => 'JPY', // Japan - Japanese Yen
 		];
 		$currency = isset($currency_map[$billing_country]) ? $currency_map[$billing_country] : 'USD';
         $order_total = wc_price($order->get_total(), ['currency' => $currency]);
@@ -674,6 +685,7 @@ class Dynamic_Order_Emails {
         $subject = get_theme_mod('doe_credit_card_subject', 'PAYMENT LINK : [{company_name}]: New order #{order_id}');
         $subject = $this->replace_placeholders($subject, $order);
         $content = get_theme_mod('doe_credit_card_email', 'Hello {customer_name},<br><br>Thank you for placing a valuable order with us!!!<br><br>Your total payable amount is {order_total}<br><br>We have received your card information and will charge your card soon. Please ensure sufficient funds are available.<br><br><strong>Note:</strong> Your items will ship from India only. Delivery will take approximately 15-20 days (up to 30 days from dispatch due to postal disruptions, weather issues, or natural disasters).<br><br><strong>CHARGEBACK-DISPUTE POLICY:</strong><br><br>We kindly ask you not to make chargebacks without contacting us. If you are not satisfied with our service/Product you have purchased, please contact us at <a href="mailto:{from_email}">{from_email}</a> and we will try to do everything possible to resolve the problem in your favor.<br><br>We appreciate your patience and also your patronage of our pharmacy<br><br>Warm Regards,<br>Team {company_name}<br>Phone: +1 877-925-1112 (Call and Chat)<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)');
+        $content = $this->append_global_footer($content);
 
         $email_content = '
         <html>
@@ -714,6 +726,8 @@ class Dynamic_Order_Emails {
             'TW' => 'tw',
             'CA' => 'ca',
             'HK' => 'hk',
+            'NZ' => 'nz',
+            'JP' => 'jp',
         ];
         $country_key = $country_map[$billing_country] ?? 'us';
     
@@ -740,6 +754,7 @@ class Dynamic_Order_Emails {
         // Get country-specific email body
 		$email_body_key = 'direct_bank_transfer_email_body_' . $country_key;
 		$content = $settings[$email_body_key] ?? 'Hello {customer_name},<br><br>Thank you for placing a valuable order with us!!!<br><br>Your total payable amount is {order_total}<br><br>Use the below details to transfer the net amount, and simply mention your order number in the comment section. <strong>DO NOT</strong> reference anything related to medicine or website names. Just mention your order number:<br><br><strong>Account Holder Name:</strong> GAJANAND ENTERPRISE<br><strong>Account Number:</strong> 8339589472<br><strong>ACH Routing Number:</strong> 026073150<br><strong>Account Type:</strong> Checking<br><strong>Bank Name and Address:</strong> Community Federal Savings Bank, 5 Penn Plaza, 14th Floor, New York, NY 10001, US<br><br>After completion of transfer, please share a screenshot or receipt.<br><br><strong>Note:</strong> Your items will ship from India only. Delivery will take approximately 15-20 days (up to 30 days from dispatch due to postal disruptions, weather issues, or natural disasters).<br><br><strong>CHARGEBACK-DISPUTE POLICY:</strong><br><br>We kindly ask you not to make chargebacks without contacting us. If you are not satisfied with our service/Product you have purchased, please contact us at <a href="mailto:{from_email}">{from_email}</a> and we will try to do everything possible to resolve the problem in your favor.<br><br>We appreciate your patience and also your patronage of our pharmacy<br><br>Warm Regards,<br>Team {company_name}<br>Phone: +1 877-925-1112 (Call and Chat)<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)';
+        $content = $this->append_global_footer($content);
 
 		// Remove default BACS instructions if payment method is DOE BACS or BACS
 		if ($payment_method === 'doe_bacs' || $payment_method === 'bacs') {
@@ -797,6 +812,7 @@ class Dynamic_Order_Emails {
         $subject = $this->replace_placeholders($subject, $order);
         // Check for both keys for backward compatibility
         $content = $settings['doe_check_email'] ?? $settings['doe_check_usa'] ?? 'Hello {customer_name},<br><br>Thank you for placing a valuable order with us!!!<br><br>Your total payable amount is {order_total}<br><br>Please send your crypto payment for order #{order_id} to the provided wallet address. Simply mention your order number in the transaction details. <strong>DO NOT</strong> reference anything related to medicine or website names.<br><br>After completion of transfer, please share a screenshot or transaction ID.<br><br><strong>Note:</strong> Your items will ship from India only. Delivery will take approximately 15-20 days (up to 30 days from dispatch due to postal disruptions, weather issues, or natural disasters).<br><br><strong>CHARGEBACK-DISPUTE POLICY:</strong><br><br>We kindly ask you not to make chargebacks without contacting us. If you are not satisfied with our service/Product you have purchased, please contact us at <a href="mailto:{from_email}">{from_email}</a> and we will try to do everything possible to resolve the problem in your favor.<br><br>We appreciate your patience and also your patronage of our pharmacy.<br><br>Warm Regards,<br>Team {company_name}<br>Phone: +1 877-925-1112<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)';
+        $content = $this->append_global_footer($content);
 
         $email_content = '
         <html>
@@ -857,6 +873,7 @@ class Dynamic_Order_Emails {
         $subject = $settings[$subject_key] ?? 'PAYMENT LINK : [{company_name}]: New order #{order_id}';
         $subject = $this->replace_placeholders($subject, $order);
         $content = $settings[$content_key] ?? 'Hello {customer_name},<br><br>Thank you for placing a valuable order with us!!!<br><br>Your total payable amount is {order_total}<br><br>Please send your Zelle payment for order #{order_id} to the email address: <strong>payment@company.com</strong>. Simply mention your order number in the transaction details. <strong>DO NOT</strong> reference anything related to medicine or website names.<br><br>After completion of transfer, please share a screenshot or transaction confirmation.<br><br><strong>Note:</strong> Your items will ship from India only. Delivery will take approximately 15-20 days (up to 30 days from dispatch due to postal disruptions, weather issues, or natural disasters).<br><br><strong>CHARGEBACK-DISPUTE POLICY:</strong><br><br>We kindly ask you not to make chargebacks without contacting us. If you are not satisfied with our service/Product you have purchased, please contact us at <a href="mailto:{from_email}">{from_email}</a> and we will try to do everything possible to resolve the problem in your favor.<br><br>We appreciate your patience and also your patronage of our pharmacy<br><br>Warm Regards,<br>Team {company_name}<br>Phone: +1 877-925-1112 (Call and Chat)<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)';
+        $content = $this->append_global_footer($content);
 
         $email_content = '
         <html>
@@ -917,6 +934,7 @@ class Dynamic_Order_Emails {
         $subject = $settings[$subject_key] ?? 'PAYMENT LINK : [{company_name}]: New order #{order_id}';
         $subject = $this->replace_placeholders($subject, $order);
         $content = $settings[$content_key] ?? 'Hello {customer_name},<br><br>Thank you for placing a valuable order with us!!!<br><br>When making the payment, please ensure you include your order number, #{order_id}, in the comment section. This will help us to quickly and accurately process your order. Please do <strong>NOT</strong> include any other details in the comment like medicine or the website name.<br><br>Your total payable amount is {order_total}<br><br>To complete your payment, please use the following link via Cash App: <a href="https://cash.app/$Rolandpaul36">https://cash.app/$Rolandpaul36</a><br><br>Thank you for your cooperation. We appreciate your business.<br><br>Warm Regards,<br>Team {company_name}<br>Phone: +1 877-925-1112 (Call and Chat)<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)';
+        $content = $this->append_global_footer($content);
 
         $email_content = '
         <html>
@@ -968,6 +986,7 @@ class Dynamic_Order_Emails {
         $subject = $settings[$subject_key] ?? 'PAYMENT LINK : [{company_name}]: New order #{order_id}';
         $subject = $this->replace_placeholders($subject, $order);
         $content = $settings[$content_key] ?? 'Hello {customer_name},<br><br>Thank you for placing a valuable Order with us!!!<br><br><p><strong>Your total payable amount is {order_total} for Order Number: #{order_id}.</strong></p><br><p>For card payments, we have the following options available. Please indicate your preferred option, and we will promptly provide you with the necessary details.</p><br><p><strong>Bank Details:</strong></p><br><p><strong>1. Zelle Pay (USA Only)</strong><br /><strong>2. Venmo (USA Only)</strong><br /><strong>3. Cash App (USA Only)</strong><br /><strong>4. USDT (Crypto Pay)</strong><br /><strong>5. Remitly</strong><br /><strong>6. Western Union</strong></p><br><p><strong>Warm Regards,</strong><br />Team {company_name}<br />Phone: +1 505-672-5168 (Call and Chat)<br /><a href="https://api.whatsapp.com/send?phone=15056725168&text=Hi {company_name},%20Team" target="_blank">WhatsApp us</a> (For chat only)</p>';
+        $content = $this->append_global_footer($content);
 
         $email_content = '
         <html>
@@ -1028,6 +1047,7 @@ class Dynamic_Order_Emails {
         $subject = $settings[$subject_key] ?? 'PAYMENT LINK : [{company_name}]: New order #{order_id}';
         $subject = $this->replace_placeholders($subject, $order);
         $content = $settings[$content_key] ?? 'Dear {customer_name},<br><br>Kindly use the "friends and family" option to avoid a 28% tax. When making the payment, please only mention your name or "Gift" in the comment section and avoid any mention of medicine or our website name. Also let us know once the payment is done we will process your order accordingly<br><br>Your total payable amount is {order_total}<br><br>Venmo to <strong>@Mark-Overson-1</strong>.<br>Let us know once the payment is complete, and we will proceed with your order accordingly. If you need the last 4 digits to verify the payments it\'s "3863"<br><br>Thank you,<br>Team {company_name}<br>Phone: +1 877-925-1112 (Call and Chat)<br><a href="https://wa.me/18779251112" target="_blank">WhatsApp us</a> (For chat only)';
+        $content = $this->append_global_footer($content);
 
         $email_content = '
         <html>
@@ -1078,6 +1098,7 @@ class Dynamic_Order_Emails {
         $subject = $this->replace_placeholders($subject, $order);
 
         $content = $settings['doe_echeck_pay_usa'] ?? 'Hello {customer_name},<br><br>Thank you for placing your order with us!<br><br>Your eCheck payment for order #{order_id} has been received and is currently being verified. We will notify you once the payment has been confirmed and your order is being processed.<br><br>Please do not refresh the page or enter the e-checking information again. We will notify you about the transaction status within one working day.<br><br><strong>Delivery can take up to twenty to thirty working days.</strong><br><br>Warm Regards,<br>Team {company_name}';
+        $content = $this->append_global_footer($content);
 
         // Prepend email_header_text if configured
         $header_text = $settings['email_header_text'] ?? '';
